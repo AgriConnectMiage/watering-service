@@ -30,9 +30,4 @@ public class FarmerController {
     public Farmer createFarmer(@RequestBody Farmer farmer) {
         return farmerService.save(farmer);
     }
-
-    @DeleteMapping("/{id}")
-    public void deleteFarmer(@PathVariable UUID id) {
-        farmerService.deleteById(id);
-    }
 }

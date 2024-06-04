@@ -1,4 +1,4 @@
-package fr.miage.acm.wateringservice;
+package fr.miage.acm.wateringservice.watering.log;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -35,6 +34,5 @@ public class WateringLog {
                 ", message='" + message + '\'' +
                 '}';
     }
-
 
 }

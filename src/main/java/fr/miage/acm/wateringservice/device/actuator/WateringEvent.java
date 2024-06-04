@@ -21,14 +21,34 @@ public class WateringEvent {
     private UUID id;
     private LocalDateTime beginDate;
     private LocalDateTime endDate;
+    // Duration in seconds
     private float duration;
     private float humidityThreshold;
 
-    public WateringEvent(LocalDateTime beginDate, LocalDateTime endDate, float duration, float humidityThreshold) {
+    public WateringEvent(LocalDateTime beginDate, LocalDateTime endDate, float humidityThreshold) {
         this.beginDate = beginDate;
         this.endDate = endDate;
-        this.duration = duration;
+        this.duration = Timestamp.valueOf(endDate).getTime() - Timestamp.valueOf(beginDate).getTime();
         this.humidityThreshold = humidityThreshold;
+    }
+
+    public WateringEvent(LocalDateTime beginDate, LocalDateTime endDate) {
+        this.beginDate = beginDate;
+        this.duration = Timestamp.valueOf(endDate).getTime() - Timestamp.valueOf(beginDate).getTime();
+        this.endDate = endDate;
+    }
+
+    public WateringEvent(LocalDateTime beginDate, float duration, float humidityThreshold) {
+        this.beginDate = beginDate;
+        this.duration = duration;
+        this.endDate = beginDate.plusSeconds((long) duration);
+        this.humidityThreshold = humidityThreshold;
+    }
+
+    public WateringEvent(LocalDateTime beginDate, float duration) {
+        this.beginDate = beginDate;
+        this.duration = duration;
+        this.endDate = beginDate.plusSeconds((long) duration);
     }
 
     public WateringEvent() {
