@@ -16,8 +16,8 @@ import lombok.Setter;
 public class Actuator extends Device {
 
     @OneToOne
-    @JoinColumn(name = "watering_event_id", referencedColumnName = "id")
-    private WateringEvent wateringEvent;
+    @JoinColumn(name = "watering_scheduler_id", referencedColumnName = "id")
+    private WateringScheduler wateringScheduler;
 
     @OneToOne
     @JoinColumn(name = "field_id")
@@ -25,7 +25,7 @@ public class Actuator extends Device {
 
     public Actuator(Farmer farmer) {
         super(farmer);
-        this.wateringEvent = null;
+        this.wateringScheduler = null;
         this.field = null;
     }
 
@@ -38,7 +38,7 @@ public class Actuator extends Device {
         return "Actuator{" +
                 "id=" + getId() +
                 ", state=" + getState() +
-                ", wateringEvent=" + getWateringEvent() +
+                ", wateringScheduler=" + getWateringScheduler() +
                 ", field=" + getField() +
                 ", farmer=" + getFarmer() +
                 '}';

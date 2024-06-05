@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-public class WateringEvent {
+public class WateringScheduler {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,39 +25,39 @@ public class WateringEvent {
     private float duration;
     private float humidityThreshold;
 
-    public WateringEvent(LocalDateTime beginDate, LocalDateTime endDate, float humidityThreshold) {
+    public WateringScheduler(LocalDateTime beginDate, LocalDateTime endDate, float humidityThreshold) {
         this.beginDate = beginDate;
         this.endDate = endDate;
         this.duration = Timestamp.valueOf(endDate).getTime() - Timestamp.valueOf(beginDate).getTime();
         this.humidityThreshold = humidityThreshold;
     }
 
-    public WateringEvent(LocalDateTime beginDate, LocalDateTime endDate) {
+    public WateringScheduler(LocalDateTime beginDate, LocalDateTime endDate) {
         this.beginDate = beginDate;
         this.duration = Timestamp.valueOf(endDate).getTime() - Timestamp.valueOf(beginDate).getTime();
         this.endDate = endDate;
     }
 
-    public WateringEvent(LocalDateTime beginDate, float duration, float humidityThreshold) {
+    public WateringScheduler(LocalDateTime beginDate, float duration, float humidityThreshold) {
         this.beginDate = beginDate;
         this.duration = duration;
         this.endDate = beginDate.plusSeconds((long) duration);
         this.humidityThreshold = humidityThreshold;
     }
 
-    public WateringEvent(LocalDateTime beginDate, float duration) {
+    public WateringScheduler(LocalDateTime beginDate, float duration) {
         this.beginDate = beginDate;
         this.duration = duration;
         this.endDate = beginDate.plusSeconds((long) duration);
     }
 
-    public WateringEvent() {
+    public WateringScheduler() {
         // Default constructor required by JPA
     }
 
     @Override
     public String toString() {
-        return "WateringEvent{" +
+        return "WateringScheduler{" +
                 "id=" + id +
                 ", beginDate=" + beginDate +
                 ", endDate=" + endDate +
