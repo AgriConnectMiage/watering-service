@@ -1,4 +1,4 @@
-package fr.miage.acm.wateringservice.device.actuator;
+package fr.miage.acm.wateringservice.device.actuator.watering.scheduler;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

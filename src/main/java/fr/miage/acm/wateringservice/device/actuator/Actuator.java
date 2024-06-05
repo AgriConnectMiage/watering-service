@@ -2,6 +2,7 @@ package fr.miage.acm.wateringservice.device.actuator;
 
 import fr.miage.acm.wateringservice.device.Device;
 import fr.miage.acm.wateringservice.device.DeviceState;
+import fr.miage.acm.wateringservice.device.actuator.watering.scheduler.WateringScheduler;
 import fr.miage.acm.wateringservice.farmer.Farmer;
 import fr.miage.acm.wateringservice.field.Field;
 import jakarta.persistence.Entity;
