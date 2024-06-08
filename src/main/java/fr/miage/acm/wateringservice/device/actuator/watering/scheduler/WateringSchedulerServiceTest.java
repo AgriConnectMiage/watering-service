@@ -16,12 +16,18 @@ public class WateringSchedulerServiceTest {
         this.wateringSchedulerService = wateringSchedulerService;
     }
 
-    public void addWateringSchedulerToActuator() {
+    public void addManualWateringSchedulerToActuator() {
         Actuator actuator = actuatorService.findAll().get(0);
         LocalDateTime beginDate = LocalDateTime.now();
-        float duration = 600;
+        float duration = 1000;
         WateringScheduler wateringScheduler = new WateringScheduler(beginDate, duration);
-        wateringSchedulerService.addWateringSchedulerToActuator(wateringScheduler, actuator);
+        wateringSchedulerService.addManualWateringSchedulerToActuator(wateringScheduler, actuator);
+    }
+
+    public void deleteWateringScheduler() {
+        Actuator actuator = actuatorService.findAll().get(0);
+        WateringScheduler wateringscheduler = wateringSchedulerService.findByActuator(actuator);
+        wateringSchedulerService.deleteWateringScheduler(wateringscheduler);
     }
 
 }

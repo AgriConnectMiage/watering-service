@@ -1,8 +1,5 @@
 package fr.miage.acm.wateringservice;
 
-import fr.miage.acm.wateringservice.device.actuator.ActuatorRepository;
-import fr.miage.acm.wateringservice.device.actuator.ActuatorService;
-import fr.miage.acm.wateringservice.device.actuator.watering.scheduler.WateringSchedulerService;
 import fr.miage.acm.wateringservice.device.actuator.watering.scheduler.WateringSchedulerServiceTest;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,7 +16,9 @@ public class WateringServiceApplication {
 
 		WateringSchedulerServiceTest wateringSchedulerServiceTest = context.getBean(WateringSchedulerServiceTest.class);
 
-		wateringSchedulerServiceTest.addWateringSchedulerToActuator();
+		wateringSchedulerServiceTest.addManualWateringSchedulerToActuator();
+//		wateringSchedulerServiceTest.deleteWateringScheduler();
+
 	}
 
 }
