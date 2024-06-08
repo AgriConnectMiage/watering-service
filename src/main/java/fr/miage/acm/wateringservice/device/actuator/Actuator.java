@@ -17,16 +17,11 @@ import lombok.Setter;
 public class Actuator extends Device {
 
     @OneToOne
-    @JoinColumn(name = "watering_scheduler_id", referencedColumnName = "id")
-    private WateringScheduler wateringScheduler;
-
-    @OneToOne
     @JoinColumn(name = "field_id")
     private Field field;
 
     public Actuator(Farmer farmer) {
         super(farmer);
-        this.wateringScheduler = null;
         this.field = null;
     }
 
@@ -39,7 +34,6 @@ public class Actuator extends Device {
         return "Actuator{" +
                 "id=" + getId() +
                 ", state=" + getState() +
-                ", wateringScheduler=" + getWateringScheduler() +
                 ", field=" + getField() +
                 ", farmer=" + getFarmer() +
                 '}';
