@@ -16,6 +16,11 @@ public class WateringSchedulerService {
     }
 
     public void addWateringSchedulerToActuator(WateringScheduler wateringScheduler, Actuator actuator) {
+        // Check if actuator is assigned to a field
+        if (actuator.getField() == null) {
+            throw new IllegalArgumentException("Actuator is not assigned to a field");
+        }
+        wateringScheduler.setActuator(actuator);
         wateringSchedulerRepository.save(wateringScheduler);
     }
 }
