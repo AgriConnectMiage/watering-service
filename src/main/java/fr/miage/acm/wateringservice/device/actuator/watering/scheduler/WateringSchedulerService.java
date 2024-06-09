@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +23,10 @@ public class WateringSchedulerService {
     public WateringSchedulerService(WateringSchedulerRepository wateringSchedulerRepository, ActuatorService actuatorService) {
         this.wateringSchedulerRepository = wateringSchedulerRepository;
         this.actuatorService = actuatorService;
+    }
+
+    public Optional<WateringScheduler> findById(UUID id) {
+        return wateringSchedulerRepository.findById(id);
     }
 
     public void addManualWateringSchedulerToActuator(WateringScheduler wateringScheduler, Actuator actuator) {
