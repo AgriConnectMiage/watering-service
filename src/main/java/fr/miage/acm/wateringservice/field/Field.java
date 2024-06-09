@@ -42,4 +42,8 @@ public class Field {
                 ", farmer=" + farmer +
                 '}';
     }
+
+    public String getCoord() {
+        return xcoord + "," + ycoord;
+    }
 }

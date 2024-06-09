@@ -1,6 +1,7 @@
 package fr.miage.acm.wateringservice.device;
 
 import fr.miage.acm.wateringservice.farmer.Farmer;
+import fr.miage.acm.wateringservice.field.Field;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +24,7 @@ public abstract class Device {
     @ManyToOne
     @JoinColumn(name = "farmer_id")
     private Farmer farmer;
+
 
 
     public Device(Farmer farmer) {

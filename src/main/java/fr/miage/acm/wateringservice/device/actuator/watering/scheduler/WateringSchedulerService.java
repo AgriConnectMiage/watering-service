@@ -3,9 +3,12 @@ package fr.miage.acm.wateringservice.device.actuator.watering.scheduler;
 import fr.miage.acm.wateringservice.device.DeviceState;
 import fr.miage.acm.wateringservice.device.actuator.Actuator;
 import fr.miage.acm.wateringservice.device.actuator.ActuatorService;
+import fr.miage.acm.wateringservice.device.measurement.MeasurementService;
 import fr.miage.acm.wateringservice.watering.log.WateringLogService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -19,11 +22,13 @@ public class WateringSchedulerService {
     private final ActuatorService actuatorService;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final WateringLogService wateringLogService;
+    private final MeasurementService measurementService;
 
-    public WateringSchedulerService(WateringSchedulerRepository wateringSchedulerRepository, ActuatorService actuatorService, WateringLogService wateringLogService) {
+    public WateringSchedulerService(WateringSchedulerRepository wateringSchedulerRepository, ActuatorService actuatorService, WateringLogService wateringLogService, MeasurementService measurementService) {
         this.wateringSchedulerRepository = wateringSchedulerRepository;
         this.actuatorService = actuatorService;
         this.wateringLogService = wateringLogService;
+        this.measurementService = measurementService;
     }
 
     public Optional<WateringScheduler> findById(UUID id) {
@@ -44,14 +49,17 @@ public class WateringSchedulerService {
         actuatorService.changeState(actuator, DeviceState.ON);
         wateringSchedulerRepository.save(wateringScheduler);
 
+        wateringLogService.logWateringStart(actuator.getField().getFarmer(), actuator.getField(), wateringScheduler.getDuration());
+
         long durationInSeconds = (long) wateringScheduler.getDuration();
         scheduler.schedule(() -> {
             actuatorService.changeState(actuator, DeviceState.OFF);
+            measurementService.createWateringMeasurement(wateringScheduler);
             // TODO Do the notification part to the client
             wateringLogService.logWateringEnd(actuator.getField().getFarmer(), actuator.getField());
         }, durationInSeconds, TimeUnit.SECONDS);
 
-        wateringLogService.logWateringStart(actuator.getField().getFarmer(), actuator.getField(), wateringScheduler.getDuration());
+
         // TODO Do the notification part to the client
 
     }
@@ -65,6 +73,9 @@ public class WateringSchedulerService {
             actuatorService.changeState(actuator, DeviceState.OFF);
             // log the cancellation
             wateringLogService.logWateringCancellation(actuator.getField().getFarmer(), actuator.getField());
+            long durationInSeconds = ChronoUnit.SECONDS.between(wateringScheduler.getBeginDate(), LocalDateTime.now());
+            wateringScheduler.setDuration(durationInSeconds);
+            measurementService.createWateringMeasurement(wateringScheduler);
         }
         wateringSchedulerRepository.delete(wateringScheduler);
     }

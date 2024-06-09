@@ -1,9 +1,6 @@
 package fr.miage.acm.wateringservice.farmer;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +17,7 @@ public class Farmer {
 
     private String firstName;
     private String lastName;
+    @Column(unique = true, nullable = false)
     private String email;
     private String password;
     private Integer fieldSize;
