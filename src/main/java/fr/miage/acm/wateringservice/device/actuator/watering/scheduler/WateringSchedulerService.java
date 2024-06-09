@@ -4,10 +4,8 @@ import fr.miage.acm.wateringservice.device.DeviceState;
 import fr.miage.acm.wateringservice.device.actuator.Actuator;
 import fr.miage.acm.wateringservice.device.actuator.ActuatorService;
 import fr.miage.acm.wateringservice.watering.log.WateringLogService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -60,11 +58,13 @@ public class WateringSchedulerService {
 
 
     // TODO In case of intelligent watering, we can either cancel the scheduler or delete it
-    // For example : if the farmer wants to cancel the intelligent watering but keep the scheduler for later use
+    // For example : if the farmer wants to cancel the intelligent watering in progress but keep the scheduler for later use
     public void deleteWateringScheduler(WateringScheduler wateringScheduler) {
         Actuator actuator = wateringScheduler.getActuator();
         if (actuator.getState() == DeviceState.ON) {
             actuatorService.changeState(actuator, DeviceState.OFF);
+            // log the cancellation
+            wateringLogService.logWateringCancellation(actuator.getField().getFarmer(), actuator.getField());
         }
         wateringSchedulerRepository.delete(wateringScheduler);
     }

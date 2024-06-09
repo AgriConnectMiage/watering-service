@@ -16,8 +16,8 @@ public class WateringServiceApplication {
 
 		WateringSchedulerServiceTest wateringSchedulerServiceTest = context.getBean(WateringSchedulerServiceTest.class);
 
-//		wateringSchedulerServiceTest.deleteWateringScheduler();
 		wateringSchedulerServiceTest.addManualWateringSchedulerToActuator();
+		wateringSchedulerServiceTest.deleteWateringScheduler();
 	}
 
 }

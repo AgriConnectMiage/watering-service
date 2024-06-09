@@ -19,7 +19,7 @@ public class WateringSchedulerServiceTest {
     public void addManualWateringSchedulerToActuator() {
         Actuator actuator = actuatorService.findAll().get(0);
         LocalDateTime beginDate = LocalDateTime.now();
-        float duration = 5;
+        float duration = 1000;
         WateringScheduler wateringScheduler = new WateringScheduler(beginDate, duration);
         wateringSchedulerService.addManualWateringSchedulerToActuator(wateringScheduler, actuator);
     }
