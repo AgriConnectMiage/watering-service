@@ -8,6 +8,7 @@ import fr.miage.acm.wateringservice.device.actuator.watering.scheduler.WateringS
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class MeasurementService {
@@ -26,5 +27,4 @@ public class MeasurementService {
                 wateringScheduler.getDuration(), wateringScheduler.getHumidityThreshold(),
                 new ApiActuator(wateringScheduler.getActuator())));
     }
-
 }
