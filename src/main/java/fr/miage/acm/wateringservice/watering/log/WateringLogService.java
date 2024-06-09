@@ -1,5 +1,7 @@
 package fr.miage.acm.wateringservice.watering.log;
 
+import fr.miage.acm.wateringservice.farmer.Farmer;
+import fr.miage.acm.wateringservice.field.Field;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,6 +12,35 @@ public class WateringLogService {
         this.wateringLogRepository = wateringLogRepository;
     }
 
-    // Create message from farmer, field and watering duration
+public void logWateringStart(Farmer farmer, Field field, float durationInSeconds) {
+    // Convert duration from seconds to minutes
+    double durationInMinutes = durationInSeconds / 60.0;
 
+    // Concatenate field coordinates
+    String fieldCoords = String.format("(%d, %d)", field.getXcoord(), field.getYcoord());
+
+    // Concatenate farmer's first name and last name
+    String farmerName = String.format("%s %s", farmer.getFirstName(), farmer.getLastName());
+
+    // Create log message for the start of watering
+    String message = String.format("Farmer %s started watering field %s for %f minutes", farmerName, fieldCoords, durationInMinutes);
+
+    // Create and save the watering log
+    WateringLog wateringLog = new WateringLog(message);
+    wateringLogRepository.save(wateringLog);
+}
+
+
+    public void logWateringEnd(Farmer farmer, Field field) {
+        // Concatenate field coordinates
+        String fieldCoords = String.format("(%d, %d)", field.getXcoord(), field.getYcoord());
+        // Concatenate farmer's first name and last name
+        String farmerName = String.format("%s %s", farmer.getFirstName(), farmer.getLastName());
+        // Create log message for the end of watering
+        String message = String.format("Farmer %s finished watering field %s", farmerName, fieldCoords);
+
+        // Create and save the watering log
+        WateringLog wateringLog = new WateringLog(message);
+        wateringLogRepository.save(wateringLog);
+    }
 }

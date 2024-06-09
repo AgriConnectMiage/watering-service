@@ -26,6 +26,11 @@ public class WateringLog {
         // Default constructor required by JPA
     }
 
+    public WateringLog(String message) {
+        this.dateTime = LocalDateTime.now();
+        this.message = message;
+    }
+
     // To String
     @Override
     public String toString() {
