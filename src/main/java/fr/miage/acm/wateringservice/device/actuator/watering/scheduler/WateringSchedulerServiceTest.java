@@ -5,6 +5,7 @@ import fr.miage.acm.wateringservice.device.actuator.ActuatorService;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 public class WateringSchedulerServiceTest {
@@ -16,18 +17,33 @@ public class WateringSchedulerServiceTest {
         this.wateringSchedulerService = wateringSchedulerService;
     }
 
-    public void addManualWateringSchedulerToActuator() {
+    public void addManualWateringSchedulerToActuator(float duration) {
         Actuator actuator = actuatorService.findAll().get(0);
         LocalDateTime beginDate = LocalDateTime.now();
-        float duration = 5;
         WateringScheduler wateringScheduler = new WateringScheduler(beginDate, duration);
         wateringSchedulerService.addManualWateringSchedulerToActuator(wateringScheduler, actuator);
+    }
+
+    public void addManualWateringSchedulerToAllActuators(float duration) {
+        actuatorService.findAll().forEach(actuator -> {
+            LocalDateTime beginDate = LocalDateTime.now();
+            WateringScheduler wateringScheduler = new WateringScheduler(beginDate, duration);
+            wateringSchedulerService.addManualWateringSchedulerToActuator(wateringScheduler, actuator);
+        });
     }
 
     public void deleteWateringScheduler() {
         Actuator actuator = actuatorService.findAll().get(0);
         WateringScheduler wateringscheduler = wateringSchedulerService.findByActuator(actuator);
         wateringSchedulerService.deleteWateringScheduler(wateringscheduler);
+    }
+
+    public void deleteAllWateringSchedulers() {
+        List<Actuator> actuators = actuatorService.findAll();
+        actuators.forEach(actuator -> {
+            WateringScheduler wateringScheduler = wateringSchedulerService.findByActuator(actuator);
+            wateringSchedulerService.deleteWateringScheduler(wateringScheduler);
+        });
     }
 
 }
