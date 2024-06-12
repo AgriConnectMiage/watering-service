@@ -42,20 +42,20 @@ public class WateringSchedulerService {
 
     @PostConstruct
     public void initialize() {
-        List<WateringScheduler> allSchedulers = wateringSchedulerRepository.findAll();
+        List<WateringScheduler> allWateringSchedulers = wateringSchedulerRepository.findAll();
         LocalDateTime now = LocalDateTime.now();
 
-        for (WateringScheduler scheduler : allSchedulers) {
-            if (isWateringInProgress(scheduler)) {
-                Actuator actuator = scheduler.getActuator();
+        for (WateringScheduler wateringScheduler : allWateringSchedulers) {
+            if (isWateringInProgress(wateringScheduler)) {
+                Actuator actuator = wateringScheduler.getActuator();
                 actuatorService.changeState(actuator, DeviceState.ON);
-                schedulerMap.put(actuator.getId(), scheduler);
+                schedulerMap.put(actuator.getId(), wateringScheduler);
 
-                long delay = ChronoUnit.SECONDS.between(now, scheduler.getEndDate());
+                long delay = ChronoUnit.SECONDS.between(now, wateringScheduler.getEndDate());
                 this.scheduler.schedule(() -> {
                     actuatorService.changeState(actuator, DeviceState.OFF);
-                    measurementService.createWateringMeasurement(scheduler);
-                    wateringLogService.logWateringEnd(actuator.getField().getFarmer(), actuator.getField());
+                    measurementService.createWateringMeasurement(wateringScheduler);
+                    wateringLogService.logWateringEnd(actuator.getField().getFarmer(), actuator.getField(), wateringScheduler);
                     schedulerMap.remove(actuator.getId());
                 }, delay, TimeUnit.SECONDS);
             }
@@ -89,7 +89,7 @@ public class WateringSchedulerService {
             actuatorService.changeState(actuator, DeviceState.OFF);
             measurementService.createWateringMeasurement(wateringScheduler);
             // TODO Do the notification part to the client
-            wateringLogService.logWateringEnd(actuator.getField().getFarmer(), actuator.getField());
+            wateringLogService.logWateringEnd(actuator.getField().getFarmer(), actuator.getField(), wateringScheduler);
             schedulerMap.remove(actuator.getId());
         }, durationInSeconds, TimeUnit.SECONDS);
 
@@ -103,7 +103,7 @@ public class WateringSchedulerService {
         if (actuator.getState() == DeviceState.ON) {
             actuatorService.changeState(actuator, DeviceState.OFF);
             // log the cancellation
-            wateringLogService.logWateringCancellation(actuator.getField().getFarmer(), actuator.getField());
+            wateringLogService.logWateringCancellation(actuator.getField().getFarmer(), actuator.getField(), wateringScheduler);
             long durationInSeconds = ChronoUnit.SECONDS.between(wateringScheduler.getBeginDate(), LocalDateTime.now());
             wateringScheduler.setDuration(durationInSeconds);
             measurementService.createWateringMeasurement(wateringScheduler);

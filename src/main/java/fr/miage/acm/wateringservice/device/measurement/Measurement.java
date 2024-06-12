@@ -19,7 +19,7 @@ public class Measurement {
 
     private LocalDateTime dateTime;
 
-    private String farmerEmail;
+    private UUID farmerId;
     private String fieldCoord;
     private UUID deviceId;
 
@@ -28,16 +28,16 @@ public class Measurement {
     @Column(columnDefinition = "NUMERIC(5,1)")
     private Float temperature;
     @Column(columnDefinition = "NUMERIC(5,1)")
-    private Float duration;
+    private Float wateringDuration;
 
-    public Measurement(UUID id, LocalDateTime dateTime, Device device, Float humidity, Float temperature, Float duration) {
+    public Measurement(UUID id, LocalDateTime dateTime, Device device, Float humidity, Float temperature, Float wateringDuration) {
         this.id = id;
         this.dateTime = dateTime;
         this.deviceId = device.getId();
-        this.farmerEmail = device.getFarmer().getEmail();
+        this.farmerId = device.getFarmer().getId();
         this.humidity = humidity;
         this.temperature = temperature;
-        this.duration = duration;
+        this.wateringDuration = wateringDuration;
     }
 
     public Measurement() {
@@ -50,9 +50,10 @@ public class Measurement {
                 "id=" + id +
                 ", dateTime=" + dateTime +
                 ", sourceId=" + deviceId +
+                ", farmerId='" + farmerId + '\'' +
                 ", humidity=" + humidity +
                 ", temperature=" + temperature +
-                ", duration=" + duration +
+                ", duration=" + wateringDuration +
                 '}';
     }
 }
