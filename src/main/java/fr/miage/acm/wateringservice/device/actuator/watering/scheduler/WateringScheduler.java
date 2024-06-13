@@ -31,12 +31,6 @@ public class WateringScheduler {
     @Column(nullable = true)
     private Integer humidityThreshold;
 
-    public WateringScheduler(LocalDateTime beginDate, LocalDateTime endDate, Integer humidityThreshold) {
-        this.beginDate = beginDate;
-        this.endDate = endDate;
-        this.duration = (endDate != null && beginDate != null) ? Timestamp.valueOf(endDate).getTime() - Timestamp.valueOf(beginDate).getTime() : 0;
-        this.humidityThreshold = humidityThreshold;
-    }
 
     public WateringScheduler(LocalDateTime beginDate, LocalDateTime endDate) {
         this.beginDate = beginDate;
@@ -44,17 +38,15 @@ public class WateringScheduler {
         this.duration = (endDate != null && beginDate != null) ? Timestamp.valueOf(endDate).getTime() - Timestamp.valueOf(beginDate).getTime() : 0;
     }
 
-    public WateringScheduler(LocalDateTime beginDate, float duration, Integer humidityThreshold) {
-        this.beginDate = beginDate;
-        this.duration = duration;
-        this.endDate = beginDate.plusSeconds((long) duration);
-        this.humidityThreshold = humidityThreshold;
-    }
-
     public WateringScheduler(LocalDateTime beginDate, float duration) {
         this.beginDate = beginDate;
         this.duration = duration;
         this.endDate = beginDate.plusSeconds((long) duration);
+    }
+
+    public WateringScheduler(Integer humidityThreshold, float duration) {
+        this.humidityThreshold = humidityThreshold;
+        this.duration = duration;
     }
 
     public WateringScheduler() {

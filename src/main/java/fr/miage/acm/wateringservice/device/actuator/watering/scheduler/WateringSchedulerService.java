@@ -35,7 +35,7 @@ public class WateringSchedulerService {
         this.measurementService = measurementService;
     }
 
-    public boolean isWateringInProgress(WateringScheduler wateringScheduler){
+    public boolean isWateringInProgress(WateringScheduler wateringScheduler) {
         LocalDateTime now = LocalDateTime.now();
         return wateringScheduler.getBeginDate().isBefore(now) && wateringScheduler.getEndDate().isAfter(now);
     }
@@ -52,14 +52,22 @@ public class WateringSchedulerService {
                 schedulerMap.put(actuator.getId(), wateringScheduler);
 
                 long delay = ChronoUnit.SECONDS.between(now, wateringScheduler.getEndDate());
-                this.scheduler.schedule(() -> {
-                    actuatorService.changeState(actuator, DeviceState.OFF);
-                    measurementService.createWateringMeasurement(wateringScheduler);
-                    wateringLogService.logWateringEnd(actuator.getField().getFarmer(), actuator.getField(), wateringScheduler);
-                    schedulerMap.remove(actuator.getId());
-                }, delay, TimeUnit.SECONDS);
+                scheduleWatering(actuator, wateringScheduler, delay);
             }
         }
+    }
+
+    private void scheduleWatering(Actuator actuator, WateringScheduler wateringScheduler, long delay) {
+        this.scheduler.schedule(() -> {
+            actuatorService.changeState(actuator, DeviceState.OFF);
+            measurementService.createWateringMeasurement(wateringScheduler);
+            wateringLogService.logWateringEnd(actuator.getField().getFarmer(), actuator.getField(), wateringScheduler);
+            schedulerMap.remove(actuator.getId());
+            // set beginDate and endDate to null but keep the scheduler
+            wateringScheduler.setBeginDate(null);
+            wateringScheduler.setEndDate(null);
+            wateringSchedulerRepository.save(wateringScheduler);
+        }, delay, TimeUnit.SECONDS);
     }
 
     public Optional<WateringScheduler> findById(UUID id) {
@@ -85,34 +93,70 @@ public class WateringSchedulerService {
         wateringLogService.logWateringStart(actuator.getField().getFarmer(), actuator.getField(), wateringScheduler.getDuration());
 
         long durationInSeconds = (long) wateringScheduler.getDuration();
-        scheduler.schedule(() -> {
-            actuatorService.changeState(actuator, DeviceState.OFF);
-            measurementService.createWateringMeasurement(wateringScheduler);
-            // TODO Do the notification part to the client
-            wateringLogService.logWateringEnd(actuator.getField().getFarmer(), actuator.getField(), wateringScheduler);
-            schedulerMap.remove(actuator.getId());
-        }, durationInSeconds, TimeUnit.SECONDS);
+        scheduleWatering(actuator, wateringScheduler, durationInSeconds);
 
         // TODO Do the notification part to the client
     }
 
-    // TODO In case of intelligent watering, we can either cancel the scheduler or delete it
-    // For example : if the farmer wants to cancel the intelligent watering in progress but keep the scheduler for later use
-    public void deleteWateringScheduler(WateringScheduler wateringScheduler) {
-        Actuator actuator = wateringScheduler.getActuator();
-        if (actuator.getState() == DeviceState.ON) {
+    // add intelligent watering scheduler (with humidity threshold)
+    public void addIntelligentWateringSchedulerToActuator(WateringScheduler wateringScheduler, Actuator actuator) {
+        if (actuator.getField() == null) {
+            throw new IllegalArgumentException("Actuator is not assigned to a field");
+        }
+
+        WateringScheduler existingScheduler = wateringSchedulerRepository.findByActuator(actuator);
+        if (existingScheduler != null) {
+            wateringSchedulerRepository.delete(existingScheduler);
+            schedulerMap.remove(actuator.getId());
+        }
+
+        wateringScheduler.setActuator(actuator);
+        wateringSchedulerRepository.save(wateringScheduler);
+        // TODO Do the notification part to the client
+    }
+
+
+    // cancel watering in progress but keep the scheduler for later use : 2 cases : if humidity threshold is not null, we keep the scheduler and set the beginDate and endDate at null, else we delete it
+    public void cancelWateringInProgress(Actuator actuator) {
+        WateringScheduler wateringScheduler = schedulerMap.get(actuator.getId());
+        if (wateringScheduler != null) {
+            if (wateringScheduler.getHumidityThreshold() != null) {
+                wateringScheduler.setBeginDate(null);
+                wateringScheduler.setEndDate(null);
+                wateringSchedulerRepository.save(wateringScheduler);
+            } else {
+                deleteWateringScheduler(wateringScheduler);
+            }
             actuatorService.changeState(actuator, DeviceState.OFF);
+            schedulerMap.remove(actuator.getId());
+            // TODO Do the notification part to the client
             // log the cancellation
             wateringLogService.logWateringCancellation(actuator.getField().getFarmer(), actuator.getField(), wateringScheduler);
-            long durationInSeconds = ChronoUnit.SECONDS.between(wateringScheduler.getBeginDate(), LocalDateTime.now());
-            wateringScheduler.setDuration(durationInSeconds);
-            measurementService.createWateringMeasurement(wateringScheduler);
         }
+    }
+
+    public void deleteWateringScheduler(WateringScheduler wateringScheduler) {
         wateringSchedulerRepository.delete(wateringScheduler);
-        schedulerMap.remove(actuator.getId());
     }
 
     public WateringScheduler findByActuator(Actuator actuator) {
         return wateringSchedulerRepository.findByActuator(actuator);
     }
+
+    // trigger watering scheduler by setting beginDate to now and endDate to now + duration
+    public void triggerIntelligentWatering(WateringScheduler wateringScheduler) {
+        LocalDateTime now = LocalDateTime.now();
+        wateringScheduler.setBeginDate(now);
+        wateringScheduler.setEndDate(now.plusSeconds((long) wateringScheduler.getDuration()));
+        wateringSchedulerRepository.save(wateringScheduler);
+
+        Actuator actuator = wateringScheduler.getActuator();
+        actuatorService.changeState(actuator, DeviceState.ON);
+        schedulerMap.put(actuator.getId(), wateringScheduler);
+
+        long delay = ChronoUnit.SECONDS.between(now, wateringScheduler.getEndDate());
+        scheduleWatering(actuator, wateringScheduler, delay);
+    }
+
+
 }

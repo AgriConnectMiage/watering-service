@@ -32,6 +32,13 @@ public class WateringSchedulerServiceTest {
         });
     }
 
+    // add intelligent watering scheduler to actuator
+    public void addIntelligentWateringSchedulerToActuator() {
+        Actuator actuator = actuatorService.findAll().get(0);
+        WateringScheduler wateringScheduler = new WateringScheduler(80, 10);
+        wateringSchedulerService.addIntelligentWateringSchedulerToActuator(wateringScheduler, actuator);
+    }
+
     public void deleteWateringScheduler() {
         Actuator actuator = actuatorService.findAll().get(0);
         WateringScheduler wateringscheduler = wateringSchedulerService.findByActuator(actuator);
