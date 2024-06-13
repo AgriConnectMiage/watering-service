@@ -1,9 +1,7 @@
 package fr.miage.acm.wateringservice.watering.log;
 
-import fr.miage.acm.wateringservice.api.ApiActuator;
-import fr.miage.acm.wateringservice.api.ApiWateringScheduler;
 import fr.miage.acm.wateringservice.device.actuator.watering.scheduler.WateringScheduler;
-import fr.miage.acm.wateringservice.device.measurement.MeasurementClient;
+import fr.miage.acm.wateringservice.client.MeasurementServiceClient;
 import fr.miage.acm.wateringservice.farmer.Farmer;
 import fr.miage.acm.wateringservice.field.Field;
 import org.springframework.stereotype.Service;
@@ -12,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class WateringLogService {
     private final WateringLogRepository wateringLogRepository;
 
-    public WateringLogService(WateringLogRepository wateringLogRepository, MeasurementClient measurementClient) {
+    public WateringLogService(WateringLogRepository wateringLogRepository, MeasurementServiceClient measurementServiceClient) {
         this.wateringLogRepository = wateringLogRepository;
     }
 

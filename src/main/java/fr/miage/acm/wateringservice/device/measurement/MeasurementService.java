@@ -2,29 +2,28 @@ package fr.miage.acm.wateringservice.device.measurement;
 
 
 import fr.miage.acm.wateringservice.api.ApiActuator;
-import fr.miage.acm.wateringservice.api.ApiFarmer;
 import fr.miage.acm.wateringservice.api.ApiWateringScheduler;
+import fr.miage.acm.wateringservice.client.MeasurementServiceClient;
 import fr.miage.acm.wateringservice.device.actuator.watering.scheduler.WateringScheduler;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 public class MeasurementService {
 
     private final MeasurementRepository measurementRepository;
-    private final MeasurementClient measurementClient;
+    private final MeasurementServiceClient measurementServiceClient;
 
-    public MeasurementService(MeasurementRepository measurementRepository, MeasurementClient measurementClient) {
+    public MeasurementService(MeasurementRepository measurementRepository, MeasurementServiceClient measurementServiceClient) {
         this.measurementRepository = measurementRepository;
-        this.measurementClient = measurementClient;
+        this.measurementServiceClient = measurementServiceClient;
     }
 
     public Measurement createWateringMeasurement(WateringScheduler wateringScheduler) {
         System.out.println("appel");
         System.out.println(wateringScheduler);
-        return measurementClient.createWateringMeasurement(new ApiWateringScheduler(LocalDateTime.now(),
+        return measurementServiceClient.createWateringMeasurement(new ApiWateringScheduler(LocalDateTime.now(),
                 wateringScheduler.getDuration(), wateringScheduler.getHumidityThreshold(),
                 new ApiActuator(wateringScheduler.getActuator())));
     }
