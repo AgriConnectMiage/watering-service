@@ -37,6 +37,9 @@ public class WateringSchedulerService {
 
     public boolean isWateringInProgress(WateringScheduler wateringScheduler) {
         LocalDateTime now = LocalDateTime.now();
+        if(wateringScheduler.getBeginDate() == null || wateringScheduler.getEndDate() == null) {
+            return false;
+        }
         return wateringScheduler.getBeginDate().isBefore(now) && wateringScheduler.getEndDate().isAfter(now);
     }
 

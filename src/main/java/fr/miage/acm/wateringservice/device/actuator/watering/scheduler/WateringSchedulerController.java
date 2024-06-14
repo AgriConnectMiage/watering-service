@@ -22,7 +22,6 @@ public class WateringSchedulerController {
         this.actuatorService = actuatorService;
     }
 
-    // get all watering schedulers
     @GetMapping
     public WateringScheduler getAllWateringSchedulers(@PathVariable UUID actuatorId) {
         Optional<Actuator> optionalActuator = actuatorService.findById(actuatorId);

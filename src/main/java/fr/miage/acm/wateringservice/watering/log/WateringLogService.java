@@ -6,12 +6,23 @@ import fr.miage.acm.wateringservice.farmer.Farmer;
 import fr.miage.acm.wateringservice.field.Field;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class WateringLogService {
     private final WateringLogRepository wateringLogRepository;
 
     public WateringLogService(WateringLogRepository wateringLogRepository, MeasurementServiceClient measurementServiceClient) {
         this.wateringLogRepository = wateringLogRepository;
+    }
+
+    public List<WateringLog> findAll() {
+        return wateringLogRepository.findAll();
+    }
+
+    public List<WateringLog> findByFarmerId(UUID farmerId) {
+        return wateringLogRepository.findByFarmerId(farmerId);
     }
 
     public void logWateringStart(Farmer farmer, Field field, float durationInSeconds) {
@@ -28,7 +39,7 @@ public class WateringLogService {
         String message = String.format("Farmer %s started watering field %s for %d minutes", farmerName, fieldCoords, durationInMinutes);
 
         // Create and save the watering log
-        WateringLog wateringLog = new WateringLog(message);
+        WateringLog wateringLog = new WateringLog(message, farmer.getId());
         wateringLogRepository.save(wateringLog);
     }
 
@@ -42,7 +53,7 @@ public class WateringLogService {
         String message = String.format("Farmer %s finished watering field %s", farmerName, fieldCoords);
 
         // Create and save the watering log
-        WateringLog wateringLog = new WateringLog(message);
+        WateringLog wateringLog = new WateringLog(message, farmer.getId());
         wateringLogRepository.save(wateringLog);
     }
 
@@ -57,7 +68,7 @@ public class WateringLogService {
 
 
         // Create and save the watering log
-        WateringLog wateringLog = new WateringLog(message);
+        WateringLog wateringLog = new WateringLog(message, farmer.getId());
         wateringLogRepository.save(wateringLog);
     }
 }

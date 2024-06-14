@@ -19,6 +19,7 @@ public class WateringLog {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private LocalDateTime dateTime;
+    private UUID farmerId;
 
     private String message;
 
@@ -26,9 +27,10 @@ public class WateringLog {
         // Default constructor required by JPA
     }
 
-    public WateringLog(String message) {
+    public WateringLog(String message, UUID farmerId) {
         this.dateTime = LocalDateTime.now();
         this.message = message;
+        this.farmerId = farmerId;
     }
 
     // To String
@@ -37,6 +39,7 @@ public class WateringLog {
         return "WateringLog{" +
                 ", dateTime=" + dateTime +
                 ", message='" + message + '\'' +
+                ", farmerId='" + farmerId + '\'' +
                 '}';
     }
 
