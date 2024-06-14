@@ -21,8 +21,6 @@ public class MeasurementService {
     }
 
     public Measurement createWateringMeasurement(WateringScheduler wateringScheduler) {
-        System.out.println("appel");
-        System.out.println(wateringScheduler);
         return measurementServiceClient.createWateringMeasurement(new ApiWateringScheduler(LocalDateTime.now(),
                 wateringScheduler.getDuration(), wateringScheduler.getHumidityThreshold(),
                 new ApiActuator(wateringScheduler.getActuator())));

@@ -16,50 +16,37 @@ public class WateringSchedulerController {
     private final WateringSchedulerService wateringSchedulerService;
     private final ActuatorService actuatorService;
 
-    @Autowired
     public WateringSchedulerController(WateringSchedulerService wateringSchedulerService, ActuatorService actuatorService) {
         this.wateringSchedulerService = wateringSchedulerService;
         this.actuatorService = actuatorService;
     }
 
-    @GetMapping
-    public WateringScheduler getAllWateringSchedulers(@PathVariable UUID actuatorId) {
-        Optional<Actuator> optionalActuator = actuatorService.findById(actuatorId);
-        if (!optionalActuator.isPresent()) {
-            throw new RuntimeException("Actuator not found");
-        }
-        Actuator actuator = optionalActuator.get();
-
-        return wateringSchedulerService.findByActuator(actuator);
-    }
-
     @PostMapping
-    public String addManualWateringScheduler(@PathVariable UUID actuatorId, @RequestBody WateringScheduler wateringScheduler) {
+    public String addManualWateringScheduler(@PathVariable UUID actuatorId, @RequestParam float duration) {
         Optional<Actuator> optionalActuator = actuatorService.findById(actuatorId);
         if (!optionalActuator.isPresent()) {
             return "Actuator not found";
         }
         Actuator actuator = optionalActuator.get();
+
+        WateringScheduler wateringScheduler = new WateringScheduler(duration);
 
         wateringSchedulerService.addManualWateringSchedulerToActuator(wateringScheduler, actuator);
         return "Watering Scheduler added for Actuator " + actuatorId;
     }
 
-    @DeleteMapping("/{schedulerId}")
-    public String deleteIntelligentWateringScheduler(@PathVariable UUID actuatorId, @PathVariable UUID schedulerId) {
+    @PostMapping("/intelligent")
+    public String addIntelligentWateringScheduler(@PathVariable UUID actuatorId, @RequestParam int threshold, @RequestParam float duration) {
         Optional<Actuator> optionalActuator = actuatorService.findById(actuatorId);
         if (!optionalActuator.isPresent()) {
             return "Actuator not found";
         }
         Actuator actuator = optionalActuator.get();
 
-        Optional<WateringScheduler> optionalWateringScheduler = wateringSchedulerService.findById(schedulerId);
-        if (!optionalWateringScheduler.isPresent() || !optionalWateringScheduler.get().getActuator().getId().equals(actuatorId)) {
-            return "Watering Scheduler not found for Actuator " + actuatorId;
-        }
+        WateringScheduler wateringScheduler = new WateringScheduler(threshold, duration);
 
-        wateringSchedulerService.deleteWateringScheduler(optionalWateringScheduler.get());
-        return "Watering Scheduler " + schedulerId + " deleted for Actuator " + actuatorId;
+        wateringSchedulerService.addIntelligentWateringSchedulerToActuator(wateringScheduler, actuator);
+        return "Intelligent Watering Scheduler added for Actuator " + actuatorId;
     }
 
     @GetMapping("/{schedulerId}")

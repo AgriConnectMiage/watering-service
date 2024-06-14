@@ -20,14 +20,14 @@ public class WateringSchedulerServiceTest {
     public void addManualWateringSchedulerToActuator(float duration) {
         Actuator actuator = actuatorService.findAll().get(0);
         LocalDateTime beginDate = LocalDateTime.now();
-        WateringScheduler wateringScheduler = new WateringScheduler(beginDate, duration);
+        WateringScheduler wateringScheduler = new WateringScheduler(duration);
         wateringSchedulerService.addManualWateringSchedulerToActuator(wateringScheduler, actuator);
     }
 
     public void addManualWateringSchedulerToAllActuators(float duration) {
         actuatorService.findAll().forEach(actuator -> {
             LocalDateTime beginDate = LocalDateTime.now();
-            WateringScheduler wateringScheduler = new WateringScheduler(beginDate, duration);
+            WateringScheduler wateringScheduler = new WateringScheduler(duration);
             wateringSchedulerService.addManualWateringSchedulerToActuator(wateringScheduler, actuator);
         });
     }
@@ -35,7 +35,7 @@ public class WateringSchedulerServiceTest {
     // add intelligent watering scheduler to actuator
     public void addIntelligentWateringSchedulerToActuator() {
         Actuator actuator = actuatorService.findAll().get(0);
-        WateringScheduler wateringScheduler = new WateringScheduler(80, 10);
+        WateringScheduler wateringScheduler = new WateringScheduler(80, 30);
         wateringSchedulerService.addIntelligentWateringSchedulerToActuator(wateringScheduler, actuator);
     }
 
