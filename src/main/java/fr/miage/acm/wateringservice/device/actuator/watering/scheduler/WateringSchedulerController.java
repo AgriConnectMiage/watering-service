@@ -32,7 +32,7 @@ public class WateringSchedulerController {
         WateringScheduler wateringScheduler = new WateringScheduler(duration);
 
         wateringSchedulerService.addManualWateringSchedulerToActuator(wateringScheduler, actuator);
-        return "Watering Scheduler added for Actuator " + actuatorId;
+        return "Watering Scheduler " + wateringScheduler.getId() + " added for Actuator " + actuatorId;
     }
 
     @PostMapping("/intelligent")
